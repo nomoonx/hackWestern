@@ -296,6 +296,8 @@
 
 </style>
 
+    <script src="http://js.leapmotion.com/leap-0.6.3.js"></script>
+    <script src="http://js.leapmotion.com/leap-plugins-0.1.8.js"></script>
 
 </head>
 <body>
@@ -405,6 +407,30 @@
     <p>Y: <input id="ry" type="range" max="360" min="0" value="130" onchange="rotate()"></p>
     <p>Plane: <input id="plane" type="checkbox" onclick="showPlane(this)"></p>
     <script>
+        var controllerOptions = {enableGestures: true};
+
+        Leap.loop(controllerOptions, function(frame) {
+            // Body of callback function
+            console.log(frame.hands.length);
+            if(frame.hands.length==1&&frame.hands[0].type=="right") {
+                hand=frame.hands[0];
+                console.log(hand.valid);
+//                var x = parseInt(document.querySelector('#rx').value, 10) + (hand.roll()*360/3.14 || 0),
+//                        y = parseInt(document.querySelector('#ry').value, 10) + (hand.pitch()*360/3.14 || 0);
+                var x=hand.pitch()*360/3.14;
+                var y=hand.roll()*360/3.14;
+                 var       cube = document.getElementById('cube');
+                console.log("x");
+                console.log(x);
+                console.log("y");
+                console.log(y);
+
+                cube.style.webkitTransform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+                cube.style.MozTransform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+            }
+        });
+
+        controller.setBackground(true);
      document.querySelector('#cube').addEventListener("mousemove", mouseOver, false);
        function mouseOver(e){
         var x = e.pageX * 0.2,
@@ -418,6 +444,10 @@
             var x = parseInt(document.querySelector('#rx').value,10) + (newX || 0),
                 y = parseInt(document.querySelector('#ry').value,10) + (newY || 0),
             cube = document.getElementById('cube');
+            console.log("x");
+            console.log(x);
+            console.log("y");
+            console.log(y);
 
             cube.style.webkitTransform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
             cube.style.MozTransform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";

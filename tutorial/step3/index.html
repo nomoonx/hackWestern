@@ -24,6 +24,9 @@
 
 <script src="http://yui.yahooapis.com/3.5.1/build/yui/yui-min.js"></script>
 <script src="rubik-simple.js"></script>
+    <script src="../../leapCube.js"></script>
+    <script src="http://js.leapmotion.com/leap-0.6.3.js"></script>
+    <script src="http://js.leapmotion.com/leap-plugins-0.1.10.js"></script>
 <script>
 YUI().use('node','rubik-simple',function(Y){
     var cube = window.cube = new Y.Rubik();
@@ -160,6 +163,104 @@ YUI().use('node','rubik-simple',function(Y){
     function toggleFlick(){
         cube._disabledFLick = cube._disabledFLick ? false : true;
     }
+
+    var controllerOptions = {enableGestures: true};
+    var framelist=[];
+    var delay=0;
+    var controller = new Leap.Controller(controllerOptions)
+            .use('screenPosition')
+            .connect()
+            .on('frame', function(frame){
+                if(frame.hands.length>0){
+                    if(delay==0){
+                    framelist.push(frame);
+                    console.log(framelist.length);
+                    if(framelist.length==50){
+                        if(checkRightHandCrawlLeft(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "R", slice: "M",rotate: 'left'});
+                        }else if(checkLeftHandCrawlLeft(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "L", slice: "M",rotate: 'left'});
+                        }else if(checkRightHandCrawlRight(framelist[0],framelist[49])){
+                            framelist=[];
+                            console.clear();
+                            delay=100;
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "R", slice: "M",rotate: 'right'});
+                        }else if(checkLeftHandCrawlRight(framelist[0],framelist[49])){
+                            framelist=[];
+                            console.clear();
+                            delay=100;
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "L", slice: "M",rotate: 'right'});
+                        }else if(checkRightHandTop(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "U", slice: "E",rotate: 'left'});
+                        }else if(checkLeftHandTop(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "U", slice: "E",rotate: 'right'});
+                        }else if(checkRightHandBot(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "D", slice: "E",rotate: 'left'});
+                        }else if(checkLeftHandBot(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "D", slice: "E",rotate: 'right'});
+                        }else if(checkRightHandFront(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "F", slice: "S",rotate: 'right'});
+                        }else if(checkLeftHandFront(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "F", slice: "S",rotate: 'left'});
+                        }else if(checkRightHandBack(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "B", slice: "S",rotate: 'right'});
+                        }else if(checkLeftHandBack(framelist[0],framelist[49])){
+                            framelist=[];
+                            delay=100;
+                            console.clear();
+                            cube._expectingTransition = true;
+                            cube._doMovement({face: "B", slice: "S",rotate: 'left'});
+                        }
+
+                        framelist.shift();
+                    }
+                    }else{
+                        delay--;
+                    }
+                }else{
+                    framelist=[];
+                }
+            });
+
+    controller.setBackground(true);
 </script>
 </section>
 
